@@ -69,7 +69,7 @@ export function CVCard({ resume, onEdit, onDelete }: CVCardProps) {
 
       <div className={styles.info}>
         <h3 className={styles.name}>
-          {resume.personalInfo?.fullName || "CV không có tên"}
+          {resume?.personalInfo?.fullName || "CV không có tên"}
         </h3>
         <p className={styles.date}>Cập nhật {formatDate(new Date())}</p>
       </div>

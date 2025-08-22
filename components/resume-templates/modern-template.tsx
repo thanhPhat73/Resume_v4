@@ -1,19 +1,27 @@
-"use client"
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import type { ResumeData } from "../resume-builder"
-import type { CustomizationOptions } from "../customization-panel"
-import { colorSchemes, fontOptions } from "../customization-panel"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { ResumeData } from "../resume-builder";
+import type { CustomizationOptions } from "../customization-panel";
+import { colorSchemes, fontOptions } from "../customization-panel";
 
 interface ModernTemplateProps {
-  data: ResumeData
-  customization: CustomizationOptions
-  isCompact?: boolean
+  data: ResumeData;
+  customization: CustomizationOptions;
+  isCompact?: boolean;
 }
 
-export function ModernTemplate({ data, customization, isCompact = false }: ModernTemplateProps) {
-  const colorScheme = colorSchemes.find((c) => c.value === customization.colorScheme) || colorSchemes[0]
-  const fontFamily = fontOptions.find((f) => f.value === customization.font)?.family || "font-sans"
+export function ModernTemplate({
+  data,
+  customization,
+  isCompact = false,
+}: ModernTemplateProps) {
+  const colorScheme =
+    colorSchemes.find((c) => c.value === customization.colorScheme) ||
+    colorSchemes[0];
+  const fontFamily =
+    fontOptions.find((f) => f.value === customization.font)?.family ||
+    "font-sans";
 
   const getSizeStyles = (type: "text" | "heading" | "title" | "name") => {
     const sizeMap = {
@@ -35,20 +43,20 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
         title: isCompact ? "10px" : "1.5rem",
         name: isCompact ? "12px" : "2.25rem",
       },
-    }
-    return { fontSize: sizeMap[customization.fontSize][type] }
-  }
+    };
+    return { fontSize: sizeMap[customization.fontSize][type] };
+  };
 
   const getSpacingStyles = () => {
     const spacingMap = {
       compact: isCompact ? "0.125rem" : "0.5rem",
       normal: isCompact ? "0.25rem" : "1rem",
       relaxed: isCompact ? "0.375rem" : "1.5rem",
-    }
-    return { gap: spacingMap[customization.spacing] }
-  }
+    };
+    return { gap: spacingMap[customization.spacing] };
+  };
 
-  const spacingStyle = getSpacingStyles()
+  const spacingStyle = getSpacingStyles();
 
   return (
     <div
@@ -81,9 +89,21 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
       >
         <div className="flex items-center gap-4" style={{ color: "white" }}>
           {data.personalInfo.profileImage && (
-            <Avatar style={{ height: isCompact ? "2rem" : "5rem", width: isCompact ? "2rem" : "5rem" }}>
-              <AvatarImage src={data.personalInfo.profileImage || "/placeholder.svg"} />
-              <AvatarFallback style={{ backgroundColor: colorScheme.secondary, color: "white" }}>
+            <Avatar
+              style={{
+                height: isCompact ? "2rem" : "5rem",
+                width: isCompact ? "2rem" : "5rem",
+              }}
+            >
+              <AvatarImage
+                src={data.personalInfo.profileImage || "/placeholder.svg"}
+              />
+              <AvatarFallback
+                style={{
+                  backgroundColor: colorScheme.secondary,
+                  color: "white",
+                }}
+              >
                 {data.personalInfo.fullName?.charAt(0)?.toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
@@ -103,13 +123,17 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
             >
               {data.personalInfo.email && <p>{data.personalInfo.email}</p>}
               {data.personalInfo.phone && <p>{data.personalInfo.phone}</p>}
-              {data.personalInfo.address && <p>{data.personalInfo.address}</p>}
+              {data.personalInfo.jobTitle && (
+                <p>{data.personalInfo.jobTitle}</p>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", ...spacingStyle }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", ...spacingStyle }}
+      >
         {data.personalInfo.summary && (
           <section>
             <h2
@@ -128,7 +152,7 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
           </section>
         )}
 
-        {data.experience.length > 0 && (
+        {Array.isArray(data.experience) && data.experience.length > 0 && (
           <section>
             <h2
               className="font-semibold print-safe"
@@ -142,25 +166,50 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
             >
               KINH NGHIỆM LÀM VIỆC
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: isCompact ? "0.125rem" : "0.75rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: isCompact ? "0.125rem" : "0.75rem",
+              }}
+            >
               {data.experience.map((exp) => (
                 <div key={exp.id}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
                         className="font-semibold print-safe"
-                        style={{ ...getSizeStyles("text"), color: colorScheme.secondary }}
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: colorScheme.secondary,
+                        }}
                       >
                         {exp.position}
                       </h3>
-                      <p style={{ ...getSizeStyles("text"), color: "rgb(75 85 99)" }}>{exp.company}</p>
+                      <p
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: "rgb(75 85 99)",
+                        }}
+                      >
+                        {exp.company}
+                      </p>
                     </div>
-                    <p style={{ ...getSizeStyles("text"), color: "rgb(107 114 128)" }}>
-                      {exp.startDate} - {exp.current ? "Hiện tại" : exp.endDate}
+                    <p
+                      style={{
+                        ...getSizeStyles("text"),
+                        color: "rgb(107 114 128)",
+                      }}
+                    >
+                      {exp.startDate} - {exp.endDate ? "Hiện tại" : exp.endDate}
                     </p>
                   </div>
                   {exp.description && (
-                    <p style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}>{exp.description}</p>
+                    <p
+                      style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}
+                    >
+                      {exp.description}
+                    </p>
                   )}
                 </div>
               ))}
@@ -182,24 +231,47 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
             >
               HỌC VẤN
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: isCompact ? "0.125rem" : "0.75rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: isCompact ? "0.125rem" : "0.75rem",
+              }}
+            >
               {data.education.map((edu) => (
                 <div key={edu.id}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
                         className="font-semibold print-safe"
-                        style={{ ...getSizeStyles("text"), color: colorScheme.secondary }}
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: colorScheme.secondary,
+                        }}
                       >
                         {edu.degree} - {edu.field}
                       </h3>
-                      <p style={{ ...getSizeStyles("text"), color: "rgb(75 85 99)" }}>{edu.institution}</p>
+                      <p
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: "rgb(75 85 99)",
+                        }}
+                      >
+                        {edu.institution}
+                      </p>
                     </div>
-                    <p style={{ ...getSizeStyles("text"), color: "rgb(107 114 128)" }}>
+                    <p
+                      style={{
+                        ...getSizeStyles("text"),
+                        color: "rgb(107 114 128)",
+                      }}
+                    >
                       {edu.startDate} - {edu.endDate}
                     </p>
                   </div>
-                  {edu.gpa && <p style={getSizeStyles("text")}>GPA: {edu.gpa}</p>}
+                  {edu.gpa && (
+                    <p style={getSizeStyles("text")}>GPA: {edu.gpa}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -223,12 +295,18 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
             <div
               className="grid"
               style={{
-                gridTemplateColumns: isCompact ? "repeat(1, minmax(0, 1fr))" : "repeat(2, minmax(0, 1fr))",
+                gridTemplateColumns: isCompact
+                  ? "repeat(1, minmax(0, 1fr))"
+                  : "repeat(2, minmax(0, 1fr))",
                 gap: isCompact ? "0" : "0.5rem",
               }}
             >
-              {data.skills.map((skill) => (
-                <div key={skill.id} className="flex items-center gap-2" style={getSizeStyles("text")}>
+              {data.skills.map((skill, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-2"
+                  style={getSizeStyles("text")}
+                >
                   <div
                     className="rounded-full print-safe"
                     style={{
@@ -237,18 +315,7 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
                       backgroundColor: colorScheme.primary,
                     }}
                   />
-                  <span className="font-medium">{skill.name}</span>
-                  <span style={{ color: "rgb(75 85 99)" }}>
-                    (
-                    {skill.level === "beginner"
-                      ? "Mới bắt đầu"
-                      : skill.level === "intermediate"
-                        ? "Trung bình"
-                        : skill.level === "advanced"
-                          ? "Nâng cao"
-                          : "Chuyên gia"}
-                    )
-                  </span>
+                  <span className="font-medium">{skill}</span>
                 </div>
               ))}
             </div>
@@ -269,25 +336,50 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
             >
               HOẠT ĐỘNG
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: isCompact ? "0.125rem" : "0.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: isCompact ? "0.125rem" : "0.5rem",
+              }}
+            >
               {data.activities.map((activity) => (
                 <div key={activity.id}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
                         className="font-semibold print-safe"
-                        style={{ ...getSizeStyles("text"), color: colorScheme.secondary }}
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: colorScheme.secondary,
+                        }}
                       >
                         {activity.title}
                       </h3>
-                      <p style={{ ...getSizeStyles("text"), color: "rgb(75 85 99)" }}>{activity.organization}</p>
+                      <p
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: "rgb(75 85 99)",
+                        }}
+                      >
+                        {activity.organization}
+                      </p>
                     </div>
-                    <p style={{ ...getSizeStyles("text"), color: "rgb(107 114 128)" }}>
+                    <p
+                      style={{
+                        ...getSizeStyles("text"),
+                        color: "rgb(107 114 128)",
+                      }}
+                    >
                       {activity.startDate} - {activity.endDate || "Hiện tại"}
                     </p>
                   </div>
                   {activity.description && (
-                    <p style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}>{activity.description}</p>
+                    <p
+                      style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}
+                    >
+                      {activity.description}
+                    </p>
                   )}
                 </div>
               ))}
@@ -309,23 +401,50 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
             >
               GIẢI THƯỞNG & CHỨNG CHỈ
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: isCompact ? "0.125rem" : "0.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: isCompact ? "0.125rem" : "0.5rem",
+              }}
+            >
               {data.awards.map((award) => (
                 <div key={award.id}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
                         className="font-semibold print-safe"
-                        style={{ ...getSizeStyles("text"), color: colorScheme.secondary }}
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: colorScheme.secondary,
+                        }}
                       >
                         {award.title}
                       </h3>
-                      <p style={{ ...getSizeStyles("text"), color: "rgb(75 85 99)" }}>{award.issuer}</p>
+                      <p
+                        style={{
+                          ...getSizeStyles("text"),
+                          color: "rgb(75 85 99)",
+                        }}
+                      >
+                        {award.issuer}
+                      </p>
                     </div>
-                    <p style={{ ...getSizeStyles("text"), color: "rgb(107 114 128)" }}>{award.date}</p>
+                    <p
+                      style={{
+                        ...getSizeStyles("text"),
+                        color: "rgb(107 114 128)",
+                      }}
+                    >
+                      {award.date}
+                    </p>
                   </div>
                   {award.description && (
-                    <p style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}>{award.description}</p>
+                    <p
+                      style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}
+                    >
+                      {award.description}
+                    </p>
                   )}
                 </div>
               ))}
@@ -334,5 +453,5 @@ export function ModernTemplate({ data, customization, isCompact = false }: Moder
         )}
       </div>
     </div>
-  )
+  );
 }

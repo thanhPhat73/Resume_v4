@@ -1,9 +1,10 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import axios from "axios";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Upload, User } from "lucide-react";
-import type { ResumeData } from "../resume-builder";
+
+import { ResumeData } from "../resume-builder";
+
+const API_BASE_URL = "http://localhost:8080";
+const TOKEN =
+  "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidHlwZSI6ImFjY2Vzc190b2tlbiIsInN1YiI6InRoYW5oUGhhdCIsImlhdCI6MTc1NTc5Mjk1NywiZXhwIjoxNzU1Nzk2NTU3fQ.Ese7oPfHSqMLePuDa1sKUDaVp0ug2Wful8JleD6G8JI";
 
 export function PersonalInfoStep() {
   const {
@@ -23,6 +29,9 @@ export function PersonalInfoStep() {
   const [imagePreview, setImagePreview] = useState<string | null>(
     watch("personalInfo.profileImage") || null
   );
+  const [candidates, setCandidates] = useState<any[]>([]);
+  const [loadingCandidates, setLoadingCandidates] = useState(false);
+  const [errorCandidates, setErrorCandidates] = useState<string | null>(null);
 
   const profileImage = watch("personalInfo.profileImage");
   const fullName = watch("personalInfo.fullName");
@@ -31,6 +40,7 @@ export function PersonalInfoStep() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result as string;
@@ -47,6 +57,28 @@ export function PersonalInfoStep() {
     setImagePreview(null);
     setValue("personalInfo.profileImage", "", { shouldValidate: true });
   };
+
+  // Gọi API lấy danh sách ứng viên
+  // useEffect(() => {
+  //   const fetchCandidates = async () => {
+  //     setLoadingCandidates(true);
+  //     setErrorCandidates(null);
+  //     try {
+  //       const res = await axios.get(`${API_BASE_URL}/api/candidates`, {
+  //         headers: {
+  //           Authorization: `Bearer ${TOKEN}`,
+  //         },
+  //       });
+  //       setCandidates(res.data);
+  //       console.log("Candidates fetched:", res.data);
+  //     } catch (err: any) {
+  //       setErrorCandidates(err.message || "Lỗi khi lấy danh sách ứng viên");
+  //     } finally {
+  //       setLoadingCandidates(false);
+  //     }
+  //   };
+  //   fetchCandidates();
+  // }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -105,35 +137,6 @@ export function PersonalInfoStep() {
               >
                 Khuyến nghị: Ảnh vuông, kích thước tối thiểu 200x200px
               </p>
-                {/* {imagePreview && (
-                  <div
-                    style={{
-                      marginTop: "0.5rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      style={{
-                        width: "5rem",
-                        height: "5rem",
-                        objectFit: "cover",
-                        borderRadius: "0.375rem",
-                      }}
-                    />
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      onClick={handleRemoveImage}
-                      style={{ height: "2rem", width: "2rem", padding: 0 }}
-                    >
-                      <span style={{ fontSize: "1rem", lineHeight: 0 }}>×</span>
-                    </Button>
-                  </div>
-                )} */}
             </div>
           </div>
         </CardContent>
@@ -245,6 +248,17 @@ export function PersonalInfoStep() {
           Viết 2-3 câu ngắn gọn về kinh nghiệm và mục tiêu của bạn
         </p>
       </div>
+
+      {/* Hiển thị danh sách ứng viên nếu cần */}
+      {loadingCandidates && <p>Đang tải danh sách ứng viên...</p>}
+      {errorCandidates && <p style={{ color: "red" }}>{errorCandidates}</p>}
+      {candidates.length > 0 && (
+        <ul>
+          {candidates.map((c) => (
+            <li key={c.id}>{c.fullName || c.name || JSON.stringify(c)}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

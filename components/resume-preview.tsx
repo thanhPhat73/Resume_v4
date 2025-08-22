@@ -29,7 +29,7 @@ const defaultCustomization: CustomizationOptions = {
 
 const API_BASE_URL = "http://localhost:8080";
 const TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidHlwZSI6ImFjY2Vzc190b2tlbiIsInN1YiI6InRoYW5oUGhhdCIsImlhdCI6MTc1NTc4NzgzMCwiZXhwIjoxNzU1NzkxNDMwfQ.rtbUu2DJ1fHHXerm67CQ1GiM1yjh23dWAhBF6lyY5s4";
+  "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwidHlwZSI6ImFjY2Vzc190b2tlbiIsInN1YiI6InRoYW5oUGhhdDEiLCJpYXQiOjE3NTU4ODI4NDQsImV4cCI6MTc1NTg4NjQ0NH0.BBh57jE_NY5M7KBr04xOb_CWNuMpGFxFxs1KHVcVq_w";
 
 const mapFormToApi = (data: ResumeData) => {
   return {

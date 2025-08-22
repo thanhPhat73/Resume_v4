@@ -29,14 +29,20 @@ export function CVList({
         </div>
 
         <div className={styles.resumeGrid}>
-          {resumes.map((resume, index) => (
-            <CVCard
-              key={index}
-              resume={resume}
-              onEdit={() => onEditCV(resume)}
-              onDelete={() => onDeleteCV(index)}
-            />
-          ))}
+          {Array.isArray(resumes) && resumes.length > 0 ? (
+            resumes.map((resume, index) =>
+              resume && resume.personalInfo ? (
+                <CVCard
+                  key={index}
+                  resume={resume}
+                  onEdit={() => onEditCV(resume)}
+                  onDelete={() => onDeleteCV(index)}
+                />
+              ) : null
+            )
+          ) : (
+            <div>Chưa có CV nào</div>
+          )}
         </div>
       </div>
     </div>

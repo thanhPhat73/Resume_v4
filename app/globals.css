@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+html {
+  font-family: var(--font-sans);
+  --font-sans: var(--geist-sans, sans-serif);
+  --font-mono: var(--geist-mono, monospace);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
