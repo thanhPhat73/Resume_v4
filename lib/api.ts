@@ -1,10 +1,11 @@
 import { ResumeData } from "@/components/resume-builder";
 import axios from "axios";
+import { id } from "date-fns/locale";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 const API_TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwidHlwZSI6ImFjY2Vzc190b2tlbiIsInN1YiI6InRoYW5oUGhhdDEiLCJpYXQiOjE3NTU4ODY4NjgsImV4cCI6MTc1NTg5MDQ2OH0.jhK6_ylZRVvCUyFcok0TKtDc4RrFKbaL8Ip4JBToRrc";
+  "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwidHlwZSI6ImFjY2Vzc190b2tlbiIsInN1YiI6InRoYW5oUGhhdDEiLCJpYXQiOjE3NTU4OTA3NzgsImV4cCI6MTc1NTg5NDM3OH0.mbYjfmOXnZv4EhRzBinqz6Pm_7yF7vfxXNQPgtt8vXg";
 
 export const api = axios.create({
   baseURL,
@@ -92,8 +93,9 @@ export function mapFormToApi(formData: any): ApiResumeData {
   };
 }
 
-export function mapApiToForm(apiData: ApiResumeData): any {
+export function mapApiToForm(apiData: ApiResumeData & { id?: number }): any {
   return {
+    id: apiData.id,
     personalInfo: {
       fullName: apiData.fullName,
       email: apiData.email,
@@ -145,15 +147,10 @@ export const resumeApi = {
     }
   },
 
-  // getResumeById: async (id: number | string): Promise<ApiResumeData> => {
-  //   const response = await api.get(`/api/resumes/${id}`, {
-  //     headers: {
-  //       Authorization: `Bearer ${API_TOKEN}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   return response.data;
-  // },
+  getResumeById: async (id: number | string): Promise<ApiResumeData> => {
+    const response = await api.get(`/api/resumes/${id}`);
+    return response.data;
+  },
 
   saveMyResume: async (data: ApiResumeData): Promise<any> => {
     const response = await api.post("/api/resumes/me", data);
@@ -161,21 +158,11 @@ export const resumeApi = {
   },
 
   updateMyResume: async (id: number, data: ApiResumeData): Promise<any> => {
-    const response = await api.patch(`/api/resumes/me/${id}`, data, {
-      headers: {
-        Authorization: `Bearer ${API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await api.patch(`/api/resumes/me/${id}`, data);
     return response.data;
   },
 
   deleteResume: async (id: number | string): Promise<void> => {
-    await api.delete(`/api/resumes/${id}`, {
-      headers: {
-        Authorization: `Bearer ${API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
+    await api.delete(`/api/resumes/${id}`);
   },
 };

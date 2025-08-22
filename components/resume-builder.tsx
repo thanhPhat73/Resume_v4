@@ -42,6 +42,7 @@ import { useToast } from "@/hooks/use-toast";
 import styles from "./resume-builder.module.css";
 
 export interface ResumeData {
+  id: number;
   personalInfo: {
     fullName: string;
     email: string;

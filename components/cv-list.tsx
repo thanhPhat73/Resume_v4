@@ -30,13 +30,13 @@ export function CVList({
 
         <div className={styles.resumeGrid}>
           {Array.isArray(resumes) && resumes.length > 0 ? (
-            resumes.map((resume, index) =>
-              resume && resume.personalInfo ? (
+            resumes.map((resume) =>
+              typeof resume.id === "number" ? (
                 <CVCard
-                  key={index}
+                  key={resume.id}
                   resume={resume}
                   onEdit={() => onEditCV(resume)}
-                  onDelete={() => onDeleteCV(index)}
+                  onDelete={() => onDeleteCV(resume.id)}
                 />
               ) : null
             )

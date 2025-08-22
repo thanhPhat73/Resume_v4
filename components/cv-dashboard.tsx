@@ -7,6 +7,8 @@ import { CVEmptyState } from "@/components/cv-empty-state";
 import type { ResumeData } from "@/components/resume-builder";
 import { useCallback } from "react";
 import { mapApiToForm, resumeApi } from "@/lib/api";
+import { set } from "date-fns";
+import { useToast } from "./ui/use-toast";
 
 type ViewState = "empty" | "list" | "builder";
 
@@ -33,7 +35,7 @@ export function CVDashboard() {
       }
     } catch (error) {
       console.error("Failed to load resumes:", error);
-      toast("Lỗi: Không thể tải danh sách CV");
+      toast({ description: "Lỗi: Không thể tải danh sách CV" });
       setCurrentView("empty");
     }
   };
@@ -47,15 +49,33 @@ export function CVDashboard() {
     setCurrentView("builder");
   };
 
-  const handleEditCV = (resume: ResumeData) => {
-    setEditingResume(resume);
-    setCurrentView("builder");
+  const handleEditCV = async (resume: ResumeData) => {
+    try {
+      const getDataResumeById = await resumeApi.getResumeById(resume.id);
+      const mappedResume = mapApiToForm(getDataResumeById);
+      setEditingResume(mappedResume);
+      setCurrentView("builder");
+    } catch (error) {
+      console.error("Failed to load resume:", error);
+      toast({ description: "Lỗi: Không thể tải CV" });
+    }
   };
 
-  const handleDeleteCV = (index: number) => {
-    setResumes((prev) => prev.filter((_, i) => i !== index));
-    if (resumes.length === 1) {
-      setCurrentView("empty");
+  const handleDeleteCV = async (resumeId: number) => {
+    try {
+      await resumeApi.deleteResume(resumeId);
+
+      // remove from local state
+      setResumes((prev) => prev.filter((resume) => resume.id !== resumeId));
+      if (resumes.length === 1) {
+        setCurrentView("empty");
+      } else {
+        setCurrentView("list");
+      }
+      await loadResumes();
+    } catch (error) {
+      console.error("Failed to delete resume:", error);
+      toast({ description: "Lỗi: Không thể xóa CV" });
     }
   };
 
@@ -67,18 +87,6 @@ export function CVDashboard() {
     }
   };
 
-  // const handleCVSaved = (newResume: ResumeData) => {
-  //   if (editingResume) {
-  //     setResumes((prev) =>
-  //       prev.map((resume, index) =>
-  //         resume === editingResume ? newResume : resume
-  //       )
-  //     );
-  //   } else {
-  //     setResumes((prev) => [...prev, newResume]);
-  //   }
-  //   setCurrentView("list");
-  // };
   const handleCVSaved = async (newResume: ResumeData) => {
     await loadResumes(); // Gọi lại API để lấy danh sách mới nhất
     setCurrentView("list");
@@ -106,12 +114,4 @@ export function CVDashboard() {
   }
 
   return <CVEmptyState onCreateNew={handleCreateNewCV} />;
-}
-
-function useToast(): { toast: (message: string) => void } {
-  const toast = useCallback((message: string) => {
-    // Simple browser alert for demonstration; replace with a real toast in production
-    window.alert(message);
-  }, []);
-  return { toast };
 }
