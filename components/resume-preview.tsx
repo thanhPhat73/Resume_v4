@@ -10,6 +10,7 @@ import { ModernTemplate } from "./resume-templates/modern-template";
 import { ClassicTemplate } from "./resume-templates/classic-template";
 import axios from "axios";
 import styles from "./resume-preview.module.css";
+import { mapFormToApi, resumeApi } from "@/lib/api";
 
 interface ResumePreviewProps {
   data: ResumeData;
@@ -25,50 +26,6 @@ const defaultCustomization: CustomizationOptions = {
   colorScheme: "blue",
   spacing: "normal",
   fontSize: "medium",
-};
-
-const API_BASE_URL = "http://localhost:8080";
-const TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwidHlwZSI6ImFjY2Vzc190b2tlbiIsInN1YiI6InRoYW5oUGhhdDEiLCJpYXQiOjE3NTU4ODI4NDQsImV4cCI6MTc1NTg4NjQ0NH0.BBh57jE_NY5M7KBr04xOb_CWNuMpGFxFxs1KHVcVq_w";
-
-const mapFormToApi = (data: ResumeData) => {
-  return {
-    fullName: data.personalInfo?.fullName || "",
-    email: data.personalInfo?.email || "",
-    phone: data.personalInfo?.phone || "",
-    profilePicture: data.personalInfo?.profileImage || "",
-    summary: data.personalInfo?.summary || "",
-    jobTitle: data.personalInfo?.jobTitle || "",
-    educations: (data.education || []).map((edu) => ({
-      schoolName: edu.institution || "",
-      degree: edu.degree || "",
-      major: edu.field || "",
-      startYear: edu.startDate ? parseInt(edu.startDate.split("-")[0]) : "",
-      endYear: edu.endDate ? parseInt(edu.endDate.split("-")[0]) : "",
-      gpa: edu.gpa || "",
-    })),
-    experiences: (data.experience || []).map((exp) => ({
-      companyName: exp.company || "",
-      position: exp.position || "",
-      startYear: exp.startDate ? parseInt(exp.startDate.split("-")[0]) : "",
-      endYear: exp.endDate ? parseInt(exp.endDate.split("-")[0]) : "",
-      description: exp.description || "",
-    })),
-    awards: (data.awards || []).map((award) => ({
-      awardName: award.title || "",
-      awardYear: award.date ? parseInt(award.date.split("-")[0]) : "",
-      donViTrao: award.issuer || "",
-      description: award.description || "",
-    })),
-    activities: (data.activities || []).map((act) => ({
-      activityName: act.title || "",
-      organization: act.organization || "",
-      startYear: act.startDate ? parseInt(act.startDate.split("-")[0]) : "",
-      endYear: act.endDate ? parseInt(act.endDate.split("-")[0]) : "",
-      description: act.description || "",
-    })),
-    skillsResumes: data.skills || [],
-  };
 };
 
 export function ResumePreview({
@@ -87,12 +44,8 @@ export function ResumePreview({
     setIsSaving(true);
     try {
       const apiData = mapFormToApi(data);
-      await axios.post(`${API_BASE_URL}/api/resumes/me`, apiData, {
-        headers: {
-          Authorization: `Bearer ${TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const createResume = await resumeApi.saveMyResume(apiData);
+
       toast({
         title: "Lưu CV thành công!",
         description: "CV của bạn đã được lưu lên server.",
